@@ -5,6 +5,8 @@
 package br.unifae.engsoftware.maduFurini.gerenciadortarefas.view;
 
 import br.unifae.engsoftware.maduFurini.gerenciadortarefas.controller.TarefaController;
+import br.unifae.engsoftware.maduFurini.gerenciadortarefas.model.Tarefa;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
@@ -28,15 +30,27 @@ public class TelaPrincipal extends javax.swing.JFrame {
         this.screenConfigs();
     }
     
+    // Função padrão para definir os parêmtros como nulo -> evitar de mexer no código já feito
     public final void screenConfigs () {
+        screenConfigs(null);
+    }
+        
+    public final void screenConfigs (List<Tarefa> tarefas) {
+        ft.setVisible(false);
+
         this.setLocationRelativeTo(null);
 
         this.tabela = tarefasTable;
-        DefaultTableModel modeloTabela = controller.gerarTabela(); 
+        
+        DefaultTableModel modeloTabela;
+        if (tarefas != null){
+            modeloTabela = controller.gerarTabela(tarefas);
+        } else {
+            modeloTabela = controller.gerarTabela(null); 
+        }
         tabela.setModel(modeloTabela);
         
-        ft.setVisible(false);
-        setVisible(true);
+        this.setVisible(true);
         // Garantir que a tela quando aberta, fique sempre na frente de qualquer outra tela aberta do pc
         this.toFront();
     }
@@ -51,17 +65,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel2 = new javax.swing.JPanel();
+        prazoField1 = new javax.swing.JFormattedTextField();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tarefasTable = new javax.swing.JTable();
         newTarefaBtn = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        prioridadeFilterField = new javax.swing.JComboBox<>();
         logoutBtn = new javax.swing.JButton();
         editTarefaBtn = new javax.swing.JButton();
         removeTarefaBtn = new javax.swing.JButton();
+        prazoFilterField = new javax.swing.JComboBox<>();
+        filterBtn = new javax.swing.JButton();
+        cleanFilterBtn = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -73,6 +90,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 100, Short.MAX_VALUE)
         );
+
+        try {
+            prazoField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        prazoField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -154,9 +178,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("Listar tarefas de prioridade: ");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5" }));
+        prioridadeFilterField.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Prioridade", "1", "2", "3", "4", "5" }));
+        prioridadeFilterField.setToolTipText("");
+        prioridadeFilterField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                prioridadeFilterFieldActionPerformed(evt);
+            }
+        });
 
         logoutBtn.setBackground(new java.awt.Color(255, 102, 102));
         logoutBtn.setForeground(new java.awt.Color(255, 255, 255));
@@ -188,6 +216,34 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        prazoFilterField.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Prazo", "Sem Prazo", "Hoje", "Próximos 7 dias", "Últimos 7 dias", "Ordem crescente", "Ordem decrescente" }));
+        prazoFilterField.setToolTipText("");
+        prazoFilterField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                prazoFilterFieldActionPerformed(evt);
+            }
+        });
+
+        filterBtn.setBackground(new java.awt.Color(0, 153, 102));
+        filterBtn.setForeground(new java.awt.Color(255, 255, 255));
+        filterBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons8-filter-20.png"))); // NOI18N
+        filterBtn.setText("Filtrar");
+        filterBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterBtnActionPerformed(evt);
+            }
+        });
+
+        cleanFilterBtn.setBackground(new java.awt.Color(102, 102, 102));
+        cleanFilterBtn.setForeground(new java.awt.Color(255, 255, 255));
+        cleanFilterBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons8-clear-20.png"))); // NOI18N
+        cleanFilterBtn.setText("Limpar");
+        cleanFilterBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cleanFilterBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -195,45 +251,49 @@ public class TelaPrincipal extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
+                        .addComponent(logoutBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(removeTarefaBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(logoutBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(removeTarefaBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(editTarefaBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 922, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(newTarefaBtn)))
-                        .addGap(23, 23, 23))))
+                        .addComponent(editTarefaBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 922, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(prioridadeFilterField, 0, 117, Short.MAX_VALUE)
+                            .addComponent(filterBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(prazoFilterField, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cleanFilterBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 552, Short.MAX_VALUE)
+                        .addComponent(newTarefaBtn)))
+                .addGap(23, 23, 23))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(newTarefaBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel2)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(prioridadeFilterField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(prazoFilterField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(filterBtn)
+                            .addComponent(cleanFilterBtn)))
+                    .addComponent(newTarefaBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(12, 12, 12)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(logoutBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(editTarefaBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(removeTarefaBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(15, Short.MAX_VALUE))
+                    .addComponent(removeTarefaBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(editTarefaBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         pack();
@@ -272,7 +332,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         
         UIManager.put("OptionPane.yesButtonText", "Sim");
         UIManager.put("OptionPane.noButtonText", "Não");
-        int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir essa tarefa?", "Confirmação", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir essa tarefa permanentemente?", "Continua", JOptionPane.OK_CANCEL_OPTION);
 
         if (confirmacao == JOptionPane.YES_OPTION) {            
             boolean result = controller.destroy(row);
@@ -283,6 +343,39 @@ public class TelaPrincipal extends javax.swing.JFrame {
             this.screenConfigs();
         }
     }//GEN-LAST:event_removeTarefaBtnActionPerformed
+
+    private void prioridadeFilterFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prioridadeFilterFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_prioridadeFilterFieldActionPerformed
+
+    private void prazoFilterFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prazoFilterFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_prazoFilterFieldActionPerformed
+
+    private void filterBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterBtnActionPerformed
+        // Primeiro pega todas as tarefas para depois aplicar os filtros - meio que sobrescrever a lista com as condições impostas
+        List<Tarefa> tarefas = TarefaController.index();
+
+        if (prioridadeFilterField.getSelectedIndex() != 0) {
+            int prioridade = Integer.parseInt(prioridadeFilterField.getSelectedItem().toString());
+            
+            tarefas = TarefaController.filtroPorPrioridade(prioridade);
+        }
+        
+        if (prazoFilterField.getSelectedIndex() != 0) {
+            String prazo = prazoFilterField.getSelectedItem().toString();
+            
+            tarefas = TarefaController.filtroPorPrazo(prazo);
+        }
+        
+        this.setVisible(false);
+        this.screenConfigs(tarefas);
+    }//GEN-LAST:event_filterBtnActionPerformed
+
+    private void cleanFilterBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cleanFilterBtnActionPerformed
+        prioridadeFilterField.setSelectedIndex(0);
+        prazoFilterField.setSelectedIndex(0);
+    }//GEN-LAST:event_cleanFilterBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -321,16 +414,19 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cleanFilterBtn;
     private javax.swing.JButton editTarefaBtn;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JButton filterBtn;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton logoutBtn;
     private javax.swing.JButton newTarefaBtn;
+    private javax.swing.JFormattedTextField prazoField1;
+    private javax.swing.JComboBox<String> prazoFilterField;
+    private javax.swing.JComboBox<String> prioridadeFilterField;
     private javax.swing.JButton removeTarefaBtn;
     private javax.swing.JTable tarefasTable;
     // End of variables declaration//GEN-END:variables
