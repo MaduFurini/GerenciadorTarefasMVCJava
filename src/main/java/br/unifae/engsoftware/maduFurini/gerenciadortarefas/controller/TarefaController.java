@@ -11,7 +11,6 @@ import br.unifae.engsoftware.maduFurini.gerenciadortarefas.model.TarefaSimples;
 import br.unifae.engsoftware.maduFurini.gerenciadortarefas.model.TarefasTable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
@@ -24,8 +23,12 @@ public class TarefaController {
         return GerenciadorDeTarefas.index();
     }
     
-    public DefaultTableModel gerarTabela(){
-        return TarefasTable.gerarTabela(TarefaController.index());
+    public DefaultTableModel gerarTabela(List<Tarefa> tarefas){
+        if (tarefas == null) {
+            return TarefasTable.gerarTabela(TarefaController.index());
+        }
+        
+        return TarefasTable.gerarTabela(tarefas);
     }
     
     public boolean storeSimples(String descricao, int prioridade, boolean concluida, LocalDate data) {
@@ -68,5 +71,13 @@ public class TarefaController {
         }
         
         return null;
+    }
+    
+    public static List<Tarefa> filtroPorPrioridade(int prioridade) {
+        return GerenciadorDeTarefas.filtroPrioridade(prioridade);
+    }
+    
+    public static List<Tarefa> filtroPorPrazo(String prazo) {
+        return GerenciadorDeTarefas.filtroPrazo(prazo);
     }
 }
