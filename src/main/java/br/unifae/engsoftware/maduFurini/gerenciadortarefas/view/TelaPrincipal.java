@@ -346,7 +346,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         
         UIManager.put("OptionPane.yesButtonText", "Sim");
         UIManager.put("OptionPane.noButtonText", "Não");
-        int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir essa tarefa permanentemente?", "Continua", JOptionPane.OK_CANCEL_OPTION);
+        int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir essa tarefa permanentemente?", "Continua", JOptionPane.YES_NO_OPTION);
 
         if (confirmacao == JOptionPane.YES_OPTION) {            
             boolean result = controller.destroy(row);
@@ -389,6 +389,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void cleanFilterBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cleanFilterBtnActionPerformed
         prioridadeFilterField.setSelectedIndex(0);
         prazoFilterField.setSelectedIndex(0);
+        
+        this.screenConfigs();
     }//GEN-LAST:event_cleanFilterBtnActionPerformed
 
     /**

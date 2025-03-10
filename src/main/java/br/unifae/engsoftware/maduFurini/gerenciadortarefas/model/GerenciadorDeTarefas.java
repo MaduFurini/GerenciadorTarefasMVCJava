@@ -112,7 +112,7 @@ public class GerenciadorDeTarefas {
          * collect() & toList() -> coletar os resultados e transformá-los em uma List
          */
         tarefasFiltradas = switch (prazo) {
-            case "Sem prazo" -> tarefas.stream()
+            case "Sem Prazo" -> tarefas.stream()
                     .filter(t -> !(t instanceof TarefaComPrazo))
                     .collect(Collectors.toList());
             case "Hoje" -> tarefas.stream()

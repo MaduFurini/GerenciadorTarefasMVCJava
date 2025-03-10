@@ -57,16 +57,30 @@ public class FormularioTarefa extends javax.swing.JFrame {
 
         String descricao = descricaoField.getText();
         int prioridade = Integer.parseInt((String) prioridadeField.getSelectedItem());
-        LocalDate dataCriacao = LocalDate.parse(dataCriacaoField.getText(), formatter);
         boolean concluida = concluidaField.isSelected();
 
+        LocalDate dataCriacao;
+        try {
+            dataCriacao = LocalDate.parse(dataCriacaoField.getText(), formatter);
+        } catch(Exception e) {
+            JOptionPane.showMessageDialog(null, "Data de criação inválida", "Erro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+                
         TarefaController tarefaController = new TarefaController();
 
         if (this.getTarefaLocation() == -1) {
             if (prazoField.getText().isEmpty() || prazoField.getText().equals("  /  /    ")) {
                 return tarefaController.storeSimples(descricao, prioridade, concluida, dataCriacao);
             } else {
-                LocalDate prazo = LocalDate.parse(prazoField.getText(), formatter);
+                LocalDate prazo;
+                try {
+                    prazo = LocalDate.parse(prazoField.getText(), formatter);
+                } catch(Exception e) {
+                    JOptionPane.showMessageDialog(null, "Data de prazo inválida", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+
                 return tarefaController.storeComPrazo(descricao, prioridade, concluida, dataCriacao, prazo);
             }
         }
