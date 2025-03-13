@@ -9,8 +9,6 @@ O **Gerenciador de Tarefas** tem como intuito de ajudar os usuários a gerenciar
 3. [Funcionalidades](#funcionalidades)
 4. [Referências](#referências)
 5. [Como Usar](#como-usar)
-6. [Licença](#licença)
-
 
 ## 📝 Visão Geral
 
@@ -72,9 +70,4 @@ https://icons8.com
 2. **Execute o arquivo main**: Encontre o arquivo Main e o execute:
    
 ![image](https://github.com/user-attachments/assets/519939b1-d793-4604-ac9f-d5d9682f7be3)
-
-
-## Licença
-
-Este projeto está licenciado sob a **MIT License** - consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
 
